@@ -21,6 +21,23 @@ type Cluster interface {
 	PublicSSHKey(regenerate bool) (ssh.PublicKey, error)
 }
 
+// RolloutStatus describes numbers of pods in a different states and
+// the messages about unexpected rollout progress
+type RolloutStatus struct {
+	// Desired number of pods as defined in spec.
+	Desired int32
+	// Updated number of pods that are on the desired pod spec.
+	Updated int32
+	// Ready number of pods targeted by this deployment.
+	Ready int32
+	// Available number of available pods (ready for at least minReadySeconds) targeted by this deployment.
+	Available int32
+	// Outdated number of pods that are on a different pod spec.
+	Outdated int32
+	// Messages about unexpected rollout progress
+	Messages []string
+}
+
 // Controller describes a cluster resource that declares versioned images.
 type Controller struct {
 	ID     flux.ResourceID
@@ -35,6 +52,7 @@ type Controller struct {
 	// in this field.
 	Antecedent flux.ResourceID
 	Labels     map[string]string
+	Rollout    RolloutStatus
 
 	Containers ContainersOrExcuse
 }
